@@ -1,0 +1,50 @@
+@startuml
+!define RECTANGLE class
+
+package "Frontend (Browser)" {
+  [HTMX (SPA)]
+  [Bootstrap (CSS/JS)]
+  [HTML Templates]
+}
+
+package "Backend (Django MTV)" {
+  package "App: website" {
+    [website.urls] as w_urls
+    [website.views] as w_views
+    [website.models (Usuarios)] as w_models
+  }
+  
+  package "App: gamification" {
+    [gamification.urls] as g_urls
+    [gamification.views] as g_views
+    [gamification.models] as g_models
+    [gamification.utils] as g_utils
+  }
+}
+
+database "SQLite3" {
+  [Table: Usuarios]
+  [Table: UserMetroCoins]
+  [Table: GameSession]
+  [Table: GameConfig]
+}
+
+[HTMX (SPA)] --> w_urls : HTTP/AJAX
+[HTMX (SPA)] --> g_urls : HTTP/AJAX
+
+w_urls --> w_views : Routes
+g_urls --> g_views : Routes
+
+w_views --> w_models : Query/Update
+g_views --> g_models : Query/Update
+g_views --> g_utils : Calls helpers
+
+w_models --> [Table: Usuarios] : ORM
+g_models --> [Table: UserMetroCoins] : ORM
+g_models --> [Table: GameSession] : ORM
+g_models --> [Table: GameConfig] : ORM
+
+w_views --> [HTML Templates] : Render
+g_views --> [HTML Templates] : Render
+[HTML Templates] --> [Bootstrap (CSS/JS)] : Uses styles
+@enduml

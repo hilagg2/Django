@@ -1,0 +1,41 @@
+@startuml
+title Patrón Decorador (Decorator) - Autenticación y Permisos
+
+interface "Vista (Función)" as VistaBase {
+  + execute(request)
+}
+
+class "Vista Original (ej: game_lobby)" as VistaReal {
+  + execute(request)
+}
+
+class "Decorador de Autenticación (@login_required)" as LoginDecorator {
+  - vista_envuelta: VistaBase
+  + execute(request)
+}
+
+class "Decorador de Permisos (@user_passes_test)" as PermissionDecorator {
+  - vista_envuelta: VistaBase
+  + execute(request)
+}
+
+VistaBase <|.. VistaReal
+VistaBase <|.. LoginDecorator
+VistaBase <|.. PermissionDecorator
+
+LoginDecorator o--> VistaBase : envuelve
+PermissionDecorator o--> VistaBase : envuelve
+
+note right of LoginDecorator
+  **Patrón Decorator**
+  Agrega comportamiento adicional (verificar si
+  el usuario ha iniciado sesión) a la vista sin
+  modificar el código original de la misma.
+  Si falla, redirige al login.
+end note
+
+note right of PermissionDecorator
+  Agrega verificación de rol (ej: is_admin)
+  antes de ejecutar la vista envuelta.
+end note
+@enduml

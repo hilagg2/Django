@@ -1,0 +1,44 @@
+@startuml
+title Patrón Estrategia (Strategy) - Lógica de Juegos Gamificados
+
+interface "GameStrategy" as Strategy {
+  + calculate_coins(score_or_action: int, config: GameConfig) : int
+}
+
+class "CartasStrategy" as Cartas {
+  + calculate_coins(parejas: int, config) : int
+}
+
+class "SerpienteStrategy" as Serpiente {
+  + calculate_coins(score: int, config) : int
+}
+
+class "RuletaStrategy" as Ruleta {
+  + calculate_coins(coins_won: int, config) : int
+}
+
+class "PreguntasStrategy" as Preguntas {
+  + calculate_coins(correctas: int, config) : int
+}
+
+class "Contexto (submit_game_view)" as Context {
+  - strategy: GameStrategy
+  + set_strategy(strategy)
+  + execute_strategy(data)
+}
+
+Strategy <|.. Cartas
+Strategy <|.. Serpiente
+Strategy <|.. Ruleta
+Strategy <|.. Preguntas
+Context o--> Strategy
+
+note bottom of Context
+  **Patrón Strategy**
+  Permite encapsular la lógica específica de
+  cálculo de monedas y validación de cada juego
+  en clases o funciones separadas (estrategias).
+  La vista actúa como contexto, seleccionando la
+  estrategia dependiendo del juego que se envía.
+end note
+@enduml

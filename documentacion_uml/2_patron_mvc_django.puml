@@ -1,0 +1,31 @@
+@startuml
+title Patrón Modelo-Vista-Plantilla (MVC adaptado por Django)
+
+node "Navegador Web" as Browser
+
+package "Django Framework" {
+  component "urls.py (Controlador de Rutas)" as Router
+  component "views.py (Vista/Controlador Lógico)" as View
+  component "models.py (Modelo)" as Model
+  component "templates/*.html (Plantilla/Vista UI)" as Template
+}
+
+database "Base de Datos (SQLite)" as DB
+
+Browser -> Router : 1. Petición HTTP (GET/POST)
+Router -> View : 2. Enruta a la función correspondiente
+View -> Model : 3. Solicita/Actualiza datos
+Model <-> DB : 4. Consulta ORM (SQL)
+Model --> View : 5. Retorna QuerySet/Objetos
+View -> Template : 6. Pasa contexto (datos)
+Template --> View : 7. Retorna HTML renderizado
+View --> Browser : 8. Respuesta HTTP (HTML/JSON)
+
+note bottom of View
+  **Patrón MVC (Model-View-Controller)**
+  En Django se conoce como MTV (Model-Template-View).
+  - Model = Models
+  - View = Templates
+  - Controller = Views + URLs
+end note
+@enduml

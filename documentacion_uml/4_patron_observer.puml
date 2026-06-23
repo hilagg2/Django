@@ -1,0 +1,39 @@
+@startuml
+title Patrón Observador (Observer) - Django Signals
+
+interface "Sujeto (Publisher)" as Subject {
+  + add_observer(observer)
+  + remove_observer(observer)
+  + notify_observers(event_data)
+}
+
+class "Modelo User (Sujeto Concreto)" as User {
+  + save()
+}
+
+interface "Observador (Subscriber)" as Observer {
+  + update(event_data)
+}
+
+class "Signal Receiver (create_user_metrocoins)" as MetroCoinsReceiver {
+  + update(sender, instance, created, **kwargs)
+}
+
+class "UserMetroCoins" as MetroCoinsModel {
+  + create(user)
+}
+
+Subject <|.. User
+Observer <|.. MetroCoinsReceiver
+
+User -> MetroCoinsReceiver : 1. emite señal post_save
+MetroCoinsReceiver -> MetroCoinsModel : 2. si created=True, crea perfil
+
+note right of User
+  **Patrón Observer (Publish/Subscribe)**
+  Cuando ocurre un evento (ej. guardar un nuevo usuario),
+  el Sujeto emite una señal a todos los observadores
+  registrados (receivers) sin estar fuertemente
+  acoplado a ellos.
+end note
+@enduml
