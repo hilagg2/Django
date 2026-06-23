@@ -1,0 +1,50 @@
+{% comment %}Navigation menu from Uiverse.io with SPA links {% endcomment %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">MetroMed CRM</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}" hx-get="{% url 'home' %}" hx-target="#main-content"
+            hx-push-url="true">🏠 Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'game_lobby' %}" hx-get="{% url 'game_lobby' %}" hx-target="#main-content"
+            hx-push-url="true">🎮 Juegos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'add_record' %}" hx-get="{% url 'add_record' %}" hx-target="#main-content"
+            hx-push-url="true">📝 Agregar</a>
+        </li>
+        {% if user.is_staff %}
+        <li class="nav-item">
+          <a class="nav-link text-warning" href="{% url 'admin_stats' %}" hx-get="{% url 'admin_stats' %}"
+            hx-target="#main-content" hx-push-url="true">⚙️ Admin Juegos</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">🚪 Cerrar Sesión</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">📂 Iniciar Sesión</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">📔 Registrar</a>
+        </li>
+        {% endif %}
+      </ul>
+
+      {% if user.is_authenticated %}
+      <span class="nav-metrocoins ms-auto d-flex align-items-center" title="Tus MetroCoins">
+        <span class="metrocoin-icon">₥</span>&nbsp;{{ user.metrocoins.balance|default:0 }}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="orbitron text-primary">❓ Banco de Preguntas</h1>
+        <a href="{% url 'game_lobby' %}" class="btn btn-outline-secondary">Volver al Lobby</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <p class="text-muted mb-4">Ganas <strong>{{ config.coins_per_unit }} ₥</strong> por cada respuesta correcta.</p>
+                
+                {% if preguntas %}
+                <form id="trivia-form">
+                    {% for q in preguntas %}
+                    <div class="mb-4 question-block" data-correct="{{ q.respuesta_correcta }}">
+                        <h5>{{ forloop.counter }}. {{ q.texto }}</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q{{ q.id }}" id="q{{ q.id }}A" value="A">
+                            <label class="form-check-label" for="q{{ q.id }}A">{{ q.opcion_a }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q{{ q.id }}" id="q{{ q.id }}B" value="B">
+                            <label class="form-check-label" for="q{{ q.id }}B">{{ q.opcion_b }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q{{ q.id }}" id="q{{ q.id }}C" value="C">
+                            <label class="form-check-label" for="q{{ q.id }}C">{{ q.opcion_c }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q{{ q.id }}" id="q{{ q.id }}D" value="D">
+                            <label class="form-check-label" for="q{{ q.id }}D">{{ q.opcion_d }}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <button type="button" id="submit-btn" class="btn btn-primary w-100" onclick="submitTrivia()">Enviar Respuestas</button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">No hay preguntas disponibles en este momento.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for success -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="rewardToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body orbitron fs-5">
+                ¡Has ganado <span id="toast-coins"></span> ₥!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<form style="display:none;">{% csrf_token %}</form>
+
+<script>
+    function submitTrivia() {
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+
+        let correctas = 0;
+        const questions = document.querySelectorAll('.question-block');
+        
+        questions.forEach(q => {
+            const correctAnswer = q.dataset.correct;
+            const selected = q.querySelector('input[type="radio"]:checked');
+            if (selected && selected.value === correctAnswer) {
+                correctas++;
+                q.classList.add('text-success');
+            } else {
+                q.classList.add('text-danger');
+            }
+        });
+
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch("{% url 'submit_preguntas' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrf
+            },
+            body: JSON.stringify({ correctas: correctas })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('toast-coins').innerText = data.coins;
+                const toast = new bootstrap.Toast(document.getElementById('rewardToast'));
+                toast.show();
+                
+                setTimeout(() => {
+                    window.location.href = "{% url 'game_lobby' %}";
+                }, 3000);
+            }
+        });
+    }
+</script>
+{% endblock %}

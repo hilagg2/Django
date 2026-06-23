@@ -1,0 +1,278 @@
+:root {
+  --color-primary: #E8614A;
+  --color-bg: #1A1410;
+  --color-surface: #2C2018;
+  --color-surface-2: #3D2E1E;
+  --color-text: #F0E6D3;
+  --color-muted: #8C7B6B;
+  --color-accent: #C4763A;
+  --color-success: #6B9E5E;
+
+  /* Futurista extras */
+  --color-glow: rgba(232, 97, 74, 0.35);
+  --color-glow-soft: rgba(232, 97, 74, 0.12);
+  --color-scan: rgba(240, 230, 211, 0.03);
+
+  /* Bootstrap overwrites */
+  --bs-primary: #E8614A;
+  --bs-body-bg: #1A1410;
+  --bs-body-color: #F0E6D3;
+  --bs-card-bg: #2C2018;
+  --bs-border-color: #3D2E1E;
+}
+
+/* Scanlines de fondo sutiles */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  background-image:
+    repeating-linear-gradient(0deg,
+      var(--color-scan) 0px,
+      var(--color-scan) 1px,
+      transparent 1px,
+      transparent 4px);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.orbitron {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Botones con borde cortado tipo HUD */
+.btn-primary {
+  background-color: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.4rem;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+
+.btn-primary:hover {
+  color: var(--color-bg);
+  box-shadow: 0 0 18px var(--color-glow), 0 0 40px var(--color-glow-soft);
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
+}
+
+/* Cards con borde izquierdo activo y esquina cortada */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-surface-2);
+  border-left: 2px solid var(--color-primary);
+  box-shadow:
+    0 4px 30px var(--color-glow-soft),
+    inset 0 0 40px rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  transition: box-shadow 0.25s ease;
+}
+
+.card:hover {
+  box-shadow:
+    0 6px 40px var(--color-glow),
+    inset 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+/* MetroCoin icon */
+.metrocoin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 50%;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: 5px;
+  box-shadow: 0 0 8px var(--color-glow);
+}
+
+/* Badge de monedas en el navbar */
+.nav-metrocoins {
+  background-color: transparent;
+  border: 1px solid var(--color-primary);
+  padding: 4px 14px;
+  border-radius: 0;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 10px var(--color-glow-soft);
+}
+
+/* Barra de progreso estilo HUD */
+.progress {
+  background-color: var(--color-surface-2);
+  height: 6px;
+  border-radius: 0;
+  overflow: visible;
+  position: relative;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  box-shadow: 0 0 10px var(--color-glow), 0 0 3px var(--color-primary);
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  background: var(--color-text);
+  box-shadow: 0 0 6px var(--color-text);
+}
+
+/* Canvas de juego */
+.game-canvas {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-primary);
+  border-radius: 0;
+  box-shadow:
+    0 0 0 1px var(--color-surface-2),
+    0 0 30px var(--color-glow-soft),
+    inset 0 0 60px rgba(0, 0, 0, 0.6);
+}
+
+/* Rankings */
+.ranking-1 {
+  color: var(--color-primary);
+  text-shadow: 0 0 12px var(--color-glow);
+  font-weight: 700;
+}
+
+.ranking-2 {
+  color: var(--color-accent);
+}
+
+.ranking-3 {
+  color: var(--color-muted);
+}
+
+/* Grid de cartas */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.memory-card {
+  height: 100px;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-surface-2);
+  border-radius: 0;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.2s;
+}
+
+.memory-card:hover {
+  box-shadow: 0 0 14px var(--color-glow-soft);
+}
+
+.memory-card.flipped {
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  transform: rotateY(180deg);
+  box-shadow: 0 0 20px var(--color-glow);
+}
+
+.memory-card.matched {
+  background-color: var(--color-success);
+  color: var(--color-bg);
+  cursor: default;
+  box-shadow: 0 0 16px rgba(107, 158, 94, 0.4);
+}
+
+/* Ruleta */
+.ruleta-container {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  box-shadow:
+    0 0 0 4px var(--color-surface),
+    0 0 0 5px var(--color-surface-2),
+    0 0 40px var(--color-glow),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+.ruleta-slice {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  transform-origin: 100% 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: bold;
+  color: var(--color-bg);
+}
+
+/* Puntero triangular */
+.pointer {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 24px solid var(--color-primary);
+  filter: drop-shadow(0 0 6px var(--color-primary));
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}

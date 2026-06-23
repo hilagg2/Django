@@ -1,0 +1,81 @@
+/* Paleta Tierra y Coral */
+:root {
+    --color-tierra-dark: #5c3a21;
+    --color-tierra: #8b5a2b;
+    --color-tierra-light: #d2b48c;
+    --color-arena: #f5f5dc;
+    --color-coral: #ff7f50;
+    --color-coral-light: #ff9973;
+    --color-coral-dark: #e0663b;
+    --color-text-dark: #33261d;
+    --color-text-light: #fff;
+}
+
+body {
+    background-color: var(--color-arena) !important;
+    color: var(--color-text-dark) !important;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--color-tierra-dark) !important;
+}
+.navbar-brand, .nav-link {
+    color: var(--color-text-light) !important;
+}
+.nav-link:hover {
+    color: var(--color-coral) !important;
+}
+
+/* Cards */
+.card {
+    background-color: #fff !important;
+    border: 1px solid var(--color-tierra-light) !important;
+    box-shadow: 0 4px 6px rgba(139, 90, 43, 0.1);
+}
+.card-title {
+    color: var(--color-tierra-dark);
+}
+
+/* Buttons */
+.btn-primary, .btn-success {
+    background-color: var(--color-coral) !important;
+    border-color: var(--color-coral) !important;
+    color: var(--color-text-light) !important;
+}
+.btn-primary:hover, .btn-success:hover {
+    background-color: var(--color-coral-dark) !important;
+    border-color: var(--color-coral-dark) !important;
+}
+
+.btn-secondary {
+    background-color: var(--color-tierra) !important;
+    border-color: var(--color-tierra) !important;
+}
+.btn-secondary:hover {
+    background-color: var(--color-tierra-dark) !important;
+    border-color: var(--color-tierra-dark) !important;
+}
+
+/* Tables */
+.table-dark {
+    background-color: var(--color-tierra-dark) !important;
+    color: var(--color-text-light) !important;
+}
+.table-success {
+    background-color: var(--color-arena) !important;
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(210, 180, 140, 0.2) !important;
+}
+.table-bordered {
+    border-color: var(--color-tierra-light) !important;
+}
+td {
+    color: var(--color-text-dark) !important;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-tierra-dark);
+}

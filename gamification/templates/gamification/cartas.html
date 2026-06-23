@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="orbitron text-primary">🎴 Cartas en Pareja</h1>
+        <a href="{% url 'game_lobby' %}" class="btn btn-outline-secondary">Volver al Lobby</a>
+    </div>
+
+    <div class="card p-4 text-center">
+        <p class="text-muted mb-4">Encuentra las parejas iguales. Ganas <strong>{{ config.coins_per_unit }} ₥</strong> por pareja.</p>
+        
+        <div class="card-grid" id="game-board">
+            <!-- JS will populate cards here -->
+        </div>
+
+        <div class="mt-4">
+            <h4 class="orbitron">Parejas: <span id="score" class="text-primary">0</span></h4>
+            <button id="finish-btn" class="btn btn-success d-none mt-3" onclick="submitScore()">Finalizar y Cobrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for success -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="rewardToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body orbitron fs-5">
+                ¡Has ganado <span id="toast-coins"></span> ₥!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario oculto para obtener el CSRF Token fácilmente -->
+<form style="display:none;">{% csrf_token %}</form>
+
+<script>
+    const emojis = ['🚇', '🎫', '🚉', '🌆', '🚄', '🛤️', '👨‍✈️', '🔔'];
+    let cards = [...emojis, ...emojis];
+    let firstCard = null;
+    let secondCard = null;
+    let pairsFound = 0;
+    let lockBoard = false;
+    
+    // Shuffle cards
+    cards.sort(() => 0.5 - Math.random());
+
+    const board = document.getElementById('game-board');
+    const scoreEl = document.getElementById('score');
+    const finishBtn = document.getElementById('finish-btn');
+
+    cards.forEach((emoji, index) => {
+        const card = document.createElement('div');
+        card.classList.add('memory-card');
+        card.dataset.emoji = emoji;
+        card.dataset.index = index;
+        card.innerHTML = `<span style="visibility: hidden">${emoji}</span>`;
+        card.addEventListener('click', flipCard);
+        board.appendChild(card);
+    });
+
+    function flipCard() {
+        if (lockBoard) return;
+        if (this === firstCard) return;
+
+        this.classList.add('flipped');
+        this.querySelector('span').style.visibility = 'visible';
+
+        if (!firstCard) {
+            firstCard = this;
+            return;
+        }
+
+        secondCard = this;
+        checkForMatch();
+    }
+
+    function checkForMatch() {
+        const isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+
+        if (isMatch) {
+            disableCards();
+            pairsFound++;
+            scoreEl.textContent = pairsFound;
+            
+            if(pairsFound === emojis.length) {
+                finishBtn.classList.remove('d-none');
+            }
+        } else {
+            unflipCards();
+        }
+    }
+
+    function disableCards() {
+        firstCard.removeEventListener('click', flipCard);
+        secondCard.removeEventListener('click', flipCard);
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+        resetBoard();
+    }
+
+    function unflipCards() {
+        lockBoard = true;
+        setTimeout(() => {
+            firstCard.classList.remove('flipped');
+            secondCard.classList.remove('flipped');
+            firstCard.querySelector('span').style.visibility = 'hidden';
+            secondCard.querySelector('span').style.visibility = 'hidden';
+            resetBoard();
+        }, 1000);
+    }
+
+    function resetBoard() {
+        [firstCard, secondCard, lockBoard] = [null, null, false];
+    }
+
+    function submitScore() {
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch("{% url 'submit_cartas' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrf
+            },
+            body: JSON.stringify({ parejas: pairsFound })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('toast-coins').innerText = data.coins;
+                const toast = new bootstrap.Toast(document.getElementById('rewardToast'));
+                toast.show();
+                
+                setTimeout(() => {
+                    window.location.href = "{% url 'game_lobby' %}";
+                }, 2000);
+            }
+        });
+    }
+</script>
+{% endblock %}

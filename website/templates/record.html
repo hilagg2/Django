@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="text-center mb-4">Detalles del Registro</h1>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ customer_record.nombre }}</h5>
+      <p class="card-text">Correo: {{ customer_record.correo }}</p>
+      <p class="card-text">Rol ID: {{ customer_record.id_rol }}</p>
+      <p class="card-text">Metrocoins: {{ customer_record.saldo_metrocoins }}</p>
+      <p class="card-text">Verificado: {{ customer_record.verificado }}</p>
+      <p class="card-text">Fecha de Registro: {{ customer_record.fecha_registro }}</p>
+    </div>
+  </div>
+</div>
+{#comentario #}
+{#comentario   espesificando los botones que se va a utilizar para  interactuar con la base de datos#}
+
+
+{#comentario los botones van a generar error miestras creamos las funcioens y obviamente se enruta en urls #}
+<a href="{% url 'home'%}" class="btn btn-secondary">⬅Back</a>
+<a href="{% url 'delete_record' customer_record.id_usuario %}" class="btn btn-danger">⚡Eliminar</a>
+<a href="{% url 'update_record' customer_record.id_usuario %}" class="btn btn-primary">🎭 Actualizar</a>
+{% endblock %}
+{#fin de la codificacion #}

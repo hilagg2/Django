@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="orbitron text-primary">Lobby de Juegos</h1>
+            <p class="text-muted">Gana MetroCoins participando en nuestros juegos interactivos.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="card p-3 d-inline-block">
+                <h5 class="mb-1 text-muted">Tu Saldo</h5>
+                <h2 class="orbitron text-primary mb-0"><span class="metrocoin-icon">₥</span> {{ metrocoins.balance|default:0 }}</h2>
+                <small class="text-muted">Nivel: <strong class="text-warning">{{ metrocoins.level|default:'Bronce' }}</strong></small>
+            </div>
+            <div class="mt-2">
+                <a href="{% url 'my_profile' %}" class="btn btn-sm btn-outline-primary">Ver Perfil</a>
+                <a href="{% url 'ranking' %}" class="btn btn-sm btn-outline-secondary">Ranking</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for game in games %}
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="mb-3">
+                    {% if game.name == 'cartas' %}
+                    <h1 style="font-size: 3rem;">🎴</h1>
+                    {% elif game.name == 'serpiente' %}
+                    <h1 style="font-size: 3rem;">🐍</h1>
+                    {% elif game.name == 'ruleta' %}
+                    <h1 style="font-size: 3rem;">🎡</h1>
+                    {% elif game.name == 'preguntas' %}
+                    <h1 style="font-size: 3rem;">❓</h1>
+                    {% endif %}
+                </div>
+                <h4 class="orbitron">{{ game.get_name_display }}</h4>
+                <p class="text-muted mb-4">Gana hasta <strong>{{ game.max_coins_per_session }} ₥</strong> por sesión.</p>
+                <a href="{% url 'game_'|add:game.name %}" class="btn btn-primary mt-auto">Jugar Ahora</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="orbitron text-primary">🎡 Ruleta Diaria</h1>
+        <a href="{% url 'game_lobby' %}" class="btn btn-outline-secondary">Volver al Lobby</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card p-5">
+                {% if ya_giro %}
+                <div class="alert alert-warning">
+                    <h4 class="mb-0">Ya giraste la ruleta hoy.</h4>
+                    <p class="mb-0">Regresa mañana para otro intento.</p>
+                </div>
+                {% else %}
+                <p class="text-muted mb-4">Gira la ruleta y gana hasta <strong>{{ config.max_coins_per_session }} ₥</strong>.</p>
+                
+                <div class="ruleta-container bg-dark" id="ruleta">
+                    <div class="pointer"></div>
+                    <!-- Slices -->
+                    <div class="ruleta-slice" style="transform: rotate(0deg); background-color: var(--color-primary);">10 ₥</div>
+                    <div class="ruleta-slice" style="transform: rotate(60deg); background-color: var(--color-surface-2);">50 ₥</div>
+                    <div class="ruleta-slice" style="transform: rotate(120deg); background-color: var(--color-accent);">100 ₥</div>
+                    <div class="ruleta-slice" style="transform: rotate(180deg); background-color: var(--color-success);">20 ₥</div>
+                    <div class="ruleta-slice" style="transform: rotate(240deg); background-color: var(--color-muted);">0 ₥</div>
+                    <div class="ruleta-slice" style="transform: rotate(300deg); background-color: var(--color-primary);">30 ₥</div>
+                </div>
+
+                <button id="spin-btn" class="btn btn-primary btn-lg mt-5" onclick="spinRuleta()">Girar Ruleta</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for success -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="rewardToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body orbitron fs-5">
+                ¡Has ganado <span id="toast-coins"></span> ₥!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<form style="display:none;">{% csrf_token %}</form>
+
+<script>
+    const premios = [10, 50, 100, 20, 0, 30]; // Orden correspondiente a los slices
+    const maxCoins = {{ config.max_coins_per_session }};
+    
+    function spinRuleta() {
+        const btn = document.getElementById('spin-btn');
+        btn.disabled = true;
+        
+        const ruleta = document.getElementById('ruleta');
+        const girosExtra = Math.floor(Math.random() * 5) + 5; // 5 a 10 vueltas
+        const sliceIndex = Math.floor(Math.random() * premios.length);
+        const grados = (girosExtra * 360) + (360 - (sliceIndex * 60)) - 30; // -30 para centrar en el slice
+
+        ruleta.style.transform = `rotate(${grados}deg)`;
+        
+        const coinsWon = Math.min(premios[sliceIndex], maxCoins);
+
+        setTimeout(() => {
+            submitScore(coinsWon);
+        }, 4500); // Esperar que termine la animación
+    }
+
+    function submitScore(coins) {
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch("{% url 'submit_ruleta' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrf
+            },
+            body: JSON.stringify({ coins: coins })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('toast-coins').innerText = data.coins;
+                const toast = new bootstrap.Toast(document.getElementById('rewardToast'));
+                toast.show();
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                alert(data.message);
+                window.location.reload();
+            }
+        });
+    }
+</script>
+{% endblock %}

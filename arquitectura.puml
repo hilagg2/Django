@@ -1,0 +1,42 @@
+@startuml
+!define RECTANGLE class
+
+package "Frontend (Browser)" {
+  [HTMX (SPA)]
+  [Bootstrap (CSS/JS)]
+  [HTML Templates]
+}
+
+package "Backend (Django MTV)" {
+  [urls.py] as router
+  [views.py] as views
+  [forms.py (ModelForm)] as forms
+  [models.py] as models
+}
+
+database "SQLite3 / Database" {
+  [Table: Usuarios]
+  [Table: Auth_User]
+}
+
+[HTMX (SPA)] --> router : AJAX Requests (hx-boost)
+router --> views : Routes to
+views --> forms : Validates input (Regex)
+views --> models : Query/Update
+forms --> models : Binds to
+models --> [Table: Usuarios] : ORM
+models --> [Table: Auth_User] : ORM
+views --> [HTML Templates] : Render (Context)
+[HTML Templates] --> [Bootstrap (CSS/JS)] : Uses styles
+
+note right of views
+  **Design Patterns:**
+  - **Decorators:** @login_required
+  - **MVC / MTV:** Model-Template-View
+end note
+
+note right of forms
+  **Design Patterns:**
+  - **DRY:** ModelForm reuses model fields
+end note
+@enduml

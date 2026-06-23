@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="orbitron text-warning">⚙️ Estadísticas Globales</h1>
+        <div>
+            <a href="{% url 'admin_games' %}" class="btn btn-warning me-2">Gestionar Juegos</a>
+            <a href="{% url 'game_lobby' %}" class="btn btn-outline-secondary">Volver al Lobby</a>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <p class="text-muted mb-4">Resumen de participación y monedas entregadas por juego.</p>
+        
+        <div class="table-responsive">
+            <table class="table table-dark table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Juego</th>
+                        <th>Total de Partidas Jugadas</th>
+                        <th>Total de Monedas Entregadas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in stats %}
+                    <tr>
+                        <td class="fw-bold text-capitalize">{{ stat.game_type }}</td>
+                        <td>{{ stat.total_plays }}</td>
+                        <td class="text-primary fw-bold">{{ stat.total_coins }} ₥</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-3">No hay datos de participación aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

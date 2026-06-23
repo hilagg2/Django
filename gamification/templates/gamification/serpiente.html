@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="orbitron text-primary">🐍 La Serpiente</h1>
+        <a href="{% url 'game_lobby' %}" class="btn btn-outline-secondary">Volver al Lobby</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 text-center">
+            <canvas id="snake-game" width="400" height="400" class="game-canvas"></canvas>
+            
+            <div class="d-md-none mt-3">
+                <div class="row justify-content-center">
+                    <button class="btn btn-secondary w-25 m-1" onclick="changeDirection({keyCode: 38})">⬆️</button>
+                </div>
+                <div class="row justify-content-center">
+                    <button class="btn btn-secondary w-25 m-1" onclick="changeDirection({keyCode: 37})">⬅️</button>
+                    <button class="btn btn-secondary w-25 m-1" onclick="changeDirection({keyCode: 40})">⬇️</button>
+                    <button class="btn btn-secondary w-25 m-1" onclick="changeDirection({keyCode: 39})">➡️</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card p-4">
+                <h4 class="orbitron">Puntaje: <span id="score" class="text-primary">0</span></h4>
+                <p class="text-muted">Ganas <strong>{{ config.coins_per_unit }} ₥</strong> por cada punto (Max: {{ config.max_coins_per_session }} ₥).</p>
+                <hr>
+                <div id="game-over-panel" class="d-none text-center">
+                    <h5 class="text-danger mb-3">¡Juego Terminado!</h5>
+                    <button id="finish-btn" class="btn btn-success w-100" onclick="submitScore()">Cobrar Monedas</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for success -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="rewardToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body orbitron fs-5">
+                ¡Has ganado <span id="toast-coins"></span> ₥!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<form style="display:none;">{% csrf_token %}</form>
+
+<script>
+    const canvas = document.getElementById("snake-game");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const gameOverPanel = document.getElementById("game-over-panel");
+
+    let snake = [{x: 200, y: 200}];
+    let food = {x: 100, y: 100};
+    let dx = 20;
+    let dy = 0;
+    let score = 0;
+    let gameInterval;
+    let isGameOver = false;
+
+    function main() {
+        if (hasGameEnded()) {
+            isGameOver = true;
+            gameOverPanel.classList.remove('d-none');
+            return;
+        }
+        
+        setTimeout(function onTick() {
+            clearCanvas();
+            drawFood();
+            advanceSnake();
+            drawSnake();
+            main();
+        }, 100);
+    }
+
+    function clearCanvas() {
+        ctx.fillStyle = "#1A1410";
+        ctx.strokeStyle = "#3D2E1E";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawSnake() {
+        snake.forEach((part, i) => {
+            ctx.fillStyle = i === 0 ? "#E8614A" : "#C4763A";
+            ctx.strokeStyle = "#1A1410";
+            ctx.fillRect(part.x, part.y, 20, 20);
+            ctx.strokeRect(part.x, part.y, 20, 20);
+        });
+    }
+
+    function advanceSnake() {
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+        snake.unshift(head);
+        
+        const hasEatenFood = snake[0].x === food.x && snake[0].y === food.y;
+        if (hasEatenFood) {
+            score++;
+            scoreEl.innerHTML = score;
+            genFood();
+        } else {
+            snake.pop();
+        }
+    }
+
+    function drawFood() {
+        ctx.fillStyle = "#6B9E5E";
+        ctx.strokeStyle = "#1A1410";
+        ctx.fillRect(food.x, food.y, 20, 20);
+        ctx.strokeRect(food.x, food.y, 20, 20);
+    }
+
+    function randomTen(min, max) {
+        return Math.round((Math.random() * (max - min) + min) / 20) * 20;
+    }
+
+    function genFood() {
+        food.x = randomTen(0, canvas.width - 20);
+        food.y = randomTen(0, canvas.height - 20);
+        snake.forEach(function isFoodOnSnake(part) {
+            if (part.x == food.x && part.y == food.y) genFood();
+        });
+    }
+
+    function hasGameEnded() {
+        for (let i = 4; i < snake.length; i++) {
+            if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+        }
+        const hitLeftWall = snake[0].x < 0;
+        const hitRightWall = snake[0].x >= canvas.width;
+        const hitToptWall = snake[0].y < 0;
+        const hitBottomWall = snake[0].y >= canvas.height;
+        return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall;
+    }
+
+    function changeDirection(event) {
+        if(isGameOver) return;
+        
+        const LEFT_KEY = 37;
+        const RIGHT_KEY = 39;
+        const UP_KEY = 38;
+        const DOWN_KEY = 40;
+
+        const keyPressed = event.keyCode;
+        const goingUp = dy === -20;
+        const goingDown = dy === 20;
+        const goingRight = dx === 20;
+        const goingLeft = dx === -20;
+
+        if (keyPressed === LEFT_KEY && !goingRight) {
+            dx = -20; dy = 0;
+        }
+        if (keyPressed === UP_KEY && !goingDown) {
+            dx = 0; dy = -20;
+        }
+        if (keyPressed === RIGHT_KEY && !goingLeft) {
+            dx = 20; dy = 0;
+        }
+        if (keyPressed === DOWN_KEY && !goingUp) {
+            dx = 0; dy = 20;
+        }
+    }
+
+    document.addEventListener("keydown", changeDirection);
+    genFood();
+    main();
+
+    function submitScore() {
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch("{% url 'submit_serpiente' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrf
+            },
+            body: JSON.stringify({ score: score })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('toast-coins').innerText = data.coins;
+                const toast = new bootstrap.Toast(document.getElementById('rewardToast'));
+                toast.show();
+                
+                setTimeout(() => {
+                    window.location.href = "{% url 'game_lobby' %}";
+                }, 2000);
+            }
+        });
+    }
+</script>
+{% endblock %}

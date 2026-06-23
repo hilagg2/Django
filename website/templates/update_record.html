@@ -1,0 +1,22 @@
+{# Esta plantilla se utiliza para actualizar un registro existente #}
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="row justify-content-center py-5">
+  <div class="col-lg-7 col-md-9">
+    <div class="card border-0 shadow">
+      <div class="card-header bg-dark text-white text-center py-3">
+        <h2>Actualizar Registro</h2>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-primary">Actualizar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
