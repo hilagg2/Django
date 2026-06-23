@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5" style="color:#fff;">Gestión de Usuarios</h1>
+    <a href="{% url 'add_record' %}" class="btn btn-success btn-lg">
+      <i class="fs-5">+</i> Agregar Usuario
+    </a>
+  </div>
+  
+  <div class="table-responsive">
+    <table class="table table-dark table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Correo</th>
+          <th scope="col">Metrocoins</th>
+          <th scope="col">Verificado</th>
+          <th scope="col" class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if usuarios %}
+          {% for record in usuarios %}
+            <tr>
+              <td>{{ record.id_usuario }}</td>
+              <td>{{ record.nombre }}</td>
+              <td>{{ record.correo }}</td>
+              <td>{{ record.saldo_metrocoins }}</td>
+              <td>
+                {% if record.verificado == 1 %}
+                  <span class="badge bg-success">Sí</span>
+                {% else %}
+                  <span class="badge bg-danger">No</span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <a href="{% url 'record' record.id_usuario %}" class="btn btn-info btn-sm" title="Ver detalle">Ver</a>
+                <a href="{% url 'update_record' record.id_usuario %}" class="btn btn-warning btn-sm" title="Editar">Editar</a>
+                <a href="{% url 'delete_record' record.id_usuario %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');" title="Eliminar">Eliminar</a>
+              </td>
+            </tr>
+          {% endfor %}
+      {% else %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">No hay registros para mostrar.</td>
+          </tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
