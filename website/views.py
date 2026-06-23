@@ -1,6 +1,8 @@
 #website/views.py
 from .models import Usuarios
 from django.shortcuts import render, redirect
+# Import admin-specific views
+from .admin_views import manage_users, admin_ranking, admin_games, profile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -11,6 +13,18 @@ def is_admin(user):
     return user.groups.filter(name='Admin').exists() or user.is_superuser
 
 def home(request):
+    if request.user.is_authenticated and is_admin(request.user):
+        # Admin landing page – show project overview with stats
+        usuarios_count = Usuarios.objects.count()
+        usuarios_activos = Usuarios.objects.filter(verificado=1).count()
+        # Assuming each user has a related MetroCoins model with 'balance'
+        total_coins = sum(u.metrocoins.balance for u in Usuarios.objects.all() if hasattr(u, 'metrocoins') and u.metrocoins.balance)
+        context = {
+            'usuarios_count': usuarios_count,
+            'usuarios_activos': usuarios_activos,
+            'total_coins': total_coins,
+        }
+        return render(request, 'admin_home.html', context)
     records = Usuarios.objects.all()
     return render(request, 'home.html', {'records': records})
 
@@ -18,14 +32,32 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        # First try default authentication (Django User model)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             messages.success(request, "You Have Been Logged In!")
             return redirect('home')
-        else:
-            messages.error(request, "Invalid Credentials!")
-            return redirect('home')
+        # Fallback: check custom Usuarios model (email as username)
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        try:
+            custom_user = Usuarios.objects.get(correo=username)
+            if custom_user.contrasena == password:
+                # Get or create a Django auth user for session
+                django_user, created = User.objects.get_or_create(
+                    username=custom_user.correo,
+                    defaults={'first_name': custom_user.nombre}
+                )
+                # Ensure the user has a backend set for login()
+                django_user.backend = 'django.contrib.auth.backends.ModelBackend'
+                login(request, django_user)
+                messages.success(request, "You Have Been Logged In (custom user)!")
+                return redirect('home')
+        except Usuarios.DoesNotExist:
+            pass
+        messages.error(request, "Invalid Credentials!")
+        return redirect('home')
     return redirect('home')
 
 def logout_user(request):
