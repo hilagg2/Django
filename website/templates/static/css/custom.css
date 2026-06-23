@@ -1,81 +1,102 @@
-/* Paleta Tierra y Coral */
+/* Paleta Futurista Neon y Glassmorphism */
 :root {
-    --color-tierra-dark: #5c3a21;
-    --color-tierra: #8b5a2b;
-    --color-tierra-light: #d2b48c;
-    --color-arena: #f5f5dc;
-    --color-coral: #ff7f50;
-    --color-coral-light: #ff9973;
-    --color-coral-dark: #e0663b;
-    --color-text-dark: #33261d;
-    --color-text-light: #fff;
+    --color-primary: #00ffff;      /* Cyan brillante */
+    --color-secondary: #ff00ff;    /* Magenta neon */
+    --color-bg-dark: #0a0a0a;      /* Fondo oscuro */
+    --color-bg-glass: rgba(10,10,10,0.6);
+    --color-text-light: #e0e0e0;
+    --color-text-dark: #111111;
+    --color-accent: #ff007f;       /* Pink intenso */
+    --color-card-bg: rgba(255,255,255,0.08);
+    --color-card-border: rgba(255,255,255,0.12);
+    --color-nav-bg: rgba(0,0,0,0.7);
+    --color-glass-blur: blur(12px);
 }
 
+/* Global */
 body {
-    background-color: var(--color-arena) !important;
-    color: var(--color-text-dark) !important;
+    background: linear-gradient(135deg, var(--color-bg-dark), #001f3f) fixed;
+    color: var(--color-text-light);
+    font-family: 'Inter', sans-serif;
+    backdrop-filter: var(--color-glass-blur);
 }
 
 /* Navbar */
 .navbar {
-    background-color: var(--color-tierra-dark) !important;
+    background: var(--color-nav-bg) !important;
+    backdrop-filter: var(--color-glass-blur);
+    border-bottom: 1px solid var(--color-card-border);
 }
-.navbar-brand, .nav-link {
-    color: var(--color-text-light) !important;
+.navbar .nav-link, .navbar .navbar-brand {
+    color: var(--color-primary) !important;
+    transition: color 0.3s ease;
 }
-.nav-link:hover {
-    color: var(--color-coral) !important;
+.navbar .nav-link:hover {
+    color: var(--color-secondary) !important;
 }
 
-/* Cards */
+/* Glass cards */
 .card {
-    background-color: #fff !important;
-    border: 1px solid var(--color-tierra-light) !important;
-    box-shadow: 0 4px 6px rgba(139, 90, 43, 0.1);
+    background: var(--color-card-bg) !important;
+    border: 1px solid var(--color-card-border) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    backdrop-filter: var(--color-glass-blur);
+    color: var(--color-text-light) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.6);
 }
 .card-title {
-    color: var(--color-tierra-dark);
+    color: var(--color-primary) !important;
 }
 
 /* Buttons */
 .btn-primary, .btn-success {
-    background-color: var(--color-coral) !important;
-    border-color: var(--color-coral) !important;
-    color: var(--color-text-light) !important;
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-text-dark) !important;
+    box-shadow: 0 4px 6px rgba(0,255,255,0.3);
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 .btn-primary:hover, .btn-success:hover {
-    background-color: var(--color-coral-dark) !important;
-    border-color: var(--color-coral-dark) !important;
+    background: var(--color-secondary) !important;
+    border-color: var(--color-secondary) !important;
+    transform: translateY(-2px);
 }
-
 .btn-secondary {
-    background-color: var(--color-tierra) !important;
-    border-color: var(--color-tierra) !important;
+    background: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    color: var(--color-text-light) !important;
 }
 .btn-secondary:hover {
-    background-color: var(--color-tierra-dark) !important;
-    border-color: var(--color-tierra-dark) !important;
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
 }
 
 /* Tables */
-.table-dark {
-    background-color: var(--color-tierra-dark) !important;
+.table {
+    background: var(--color-card-bg) !important;
     color: var(--color-text-light) !important;
+    border-color: var(--color-card-border) !important;
 }
-.table-success {
-    background-color: var(--color-arena) !important;
+.table th, .table td {
+    border-color: var(--color-card-border) !important;
 }
-.table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: rgba(210, 180, 140, 0.2) !important;
-}
-.table-bordered {
-    border-color: var(--color-tierra-light) !important;
-}
-td {
-    color: var(--color-text-dark) !important;
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,255,255,0.05) !important;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-    color: var(--color-tierra-dark);
+    color: var(--color-primary) !important;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Misc */
+.nav-metrocoins {
+    color: var(--color-secondary) !important;
+    font-weight: 600;
 }
