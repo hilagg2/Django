@@ -12,41 +12,17 @@
   {% endif %}
 
   {% if user.is_authenticated %}
-    <h1 class="text-center mb-4">🔎Registros Usuarios</h1>
-    <div class="table-responsive">
-      <table class="table table-success table-striped table-bordered">
-        <thead class="table-dark">
-          <tr>
-            <th scope="col">Nombre</th>
-            <th scope="col">Correo</th>
-            <th scope="col">Contraseña (hash)</th>
-            <th scope="col">Fecha Registro</th>
-            <th scope="col">Metrocoins</th>
-            <th scope="col">Verificado</th>
-            <th scope="col">ID Usuario</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% if records %}
-            {% for record in records %}
-              <tr>
-                <td>{{ record.nombre }}</td>
-                <td>{{ record.correo }}</td>
-                <td>{{ record.contrasena|truncatechars:20 }}</td>
-                <td>{{ record.fecha_registro }}</td>
-                <td>{{ record.saldo_metrocoins }}</td>
-                <td>{{ record.verificado }}</td>
-                <td><a href="{% url 'record' record.id_usuario %}">{{ record.id_usuario }}</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center">
+        <h1 class="mb-4">¡Bienvenido a MetroMed, {{ user.first_name|default:user.username }}!</h1>
+        <p class="lead mb-5">
+          Aquí podrás disfrutar de nuestros juegos, acumular MetroCoins y competir en nuestro ranking. ¿Estás listo para comenzar?
+        </p>
+        <a href="{% url 'game_lobby' %}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow">
+          <i class="fs-4">🎮</i> ¡Ir a Jugar!
+        </a>
       </div>
-    {% else %}
-      <div class="alert alert-info text-center">
-        No hay registros para mostrar.
-      </div>
-    {% endif %}
+    </div>
     
   {% else %}
     <div class="row justify-content-center">
